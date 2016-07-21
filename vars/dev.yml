@@ -21,6 +21,7 @@ dev:
     - php56-redis
     - php56-imagick
     - php56-mcrypt
+    - composer
     - imagemagick
     - ruby
     - elasticsearch17

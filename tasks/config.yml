@@ -110,3 +110,14 @@
   become: "{{ item.root }}"
   with_items: "{{ dev.services }}"
   when: "'{{ item.name }}' not in running_services_list.stdout"
+
+- name: Check if apache is running
+  become: yes
+  command: apachectl
+  register: apachectl_cmd
+  changed_when: false
+
+- name: Start apache
+  become: yes
+  command: apachectl start
+  when: "'already running' in apachectl_cmd.stdout"

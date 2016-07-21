@@ -12,3 +12,5 @@ apache_configuration_items:
     line: "User {{ ansible_ssh_user }}"
   - regexp: "^Group "
     line: "Group staff"
+  - regexp: "^#ServerName www.example.com:80"
+    line: "ServerName {{ ansible_hostname }}"
