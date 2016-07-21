@@ -56,7 +56,7 @@ dev:
   services:
     - name: dnsmasq
       root: true
-    - name: myslq56
+    - name: mysql56
       root: false
     - name: elasticsearch17
       root: false

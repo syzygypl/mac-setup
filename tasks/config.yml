@@ -31,6 +31,11 @@
 # Apache config                                                                #
 ################################################################################
 
+- name: Ensure ~/Sites exists
+  file:
+    path: ~/Sites
+    state: directory
+
 - name: Configure Apache
   become: yes
   lineinfile:
@@ -102,6 +107,6 @@
 
 - name: Start services
   command: brew services start {{ item.name }}
-  become: {{ item.root }}
-  with_items: {{ dev.services }}
+  become: "{{ item.root }}"
+  with_items: "{{ dev.services }}"
   when: "'{{ item.name }}' not in running_services_list.stdout"
