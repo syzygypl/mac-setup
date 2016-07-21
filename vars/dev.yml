@@ -1,0 +1,64 @@
+---
+homebrew_cask_appdir: /Applications
+dev:
+  homebrew_taps:
+    - caskroom/cask
+    - homebrew/php
+    - homebrew/versions
+    - homebrew/services
+
+  homebrew_packages:
+    - tree
+    - wget
+    - fish
+    - pv
+    - ssh-copy-id
+    - redis
+    - mysql56
+    - php56
+    - php56-xdebug
+    - php56-intl
+    - php56-redis
+    - php56-imagick
+    - php56-mcrypt
+    - imagemagick
+    - ruby
+    - elasticsearch17
+    - heroku-toolbelt
+    - node012
+    - nvm
+    - dnsmasq
+    - homebrew/dupes/rsync
+    - coreutils
+
+  homebrew_cask_apps:
+    - atom
+    - cocoarestclient
+    - firefox
+    - google-chrome
+    - phpstorm
+    - iterm2
+    - java
+    - skype
+    - slack
+    - vagrant
+    - virtualbox
+    - wkhtmltopdf
+    - sequel-pro
+    - robomongo
+
+  npm_packages:
+    - gulp
+
+  gem_packages:
+    - hologram
+
+  services:
+    - name: dnsmasq
+      root: true
+    - name: myslq56
+      root: false
+    - name: elasticsearch17
+      root: false
+    - name: redis
+      root: false

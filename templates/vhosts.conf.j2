@@ -1,0 +1,26 @@
+# /etc/apache2/extra/httpd-vhosts.conf
+
+<Directory /Users/{{ ansible_ssh_user }}/Sites>
+  Require all granted
+  AllowOverride All
+</Directory>
+
+<VirtualHost *:80>
+  ServerName dev
+  ServerAlias *.dev
+
+  CustomLog /var/log/apache2/dev.access_log vcommon
+  ErrorLog /var/log/apache2/dev.error_log
+  VirtualDocumentRoot /Users/{{ ansible_ssh_user }}/Sites/%-2.0.%-1.0/web/
+
+  LogFormat "%{Host}i %l %u %t \"%r\" %>s %b" vcommon
+  Options +FollowSymLinks
+  DirectoryIndex index.php
+  FallbackResource /index.php
+
+  SetEnvIf Request_URI ^ Debug=1 DEBUG=1 SYMFONY_ENV=dev APP_ENV=dev
+  SetEnvIf Host ([^\.]+).dev APP_NAME=$1
+  SetEnvIf Host app.([^\.]+) APP_NAME=$1
+  SetEnvIf Cookie "APP_NAME=(\w+)" APP_NAME=$1
+
+</VirtualHost>

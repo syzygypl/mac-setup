@@ -1,0 +1,14 @@
+---
+php_configuration_items:
+  - section: PHP
+    option: upload_max_filesize
+    value: 20M
+  - section: PHP
+    option: post_max_size
+    value: 80M
+  - section: PHP
+    option: memory_limit
+    value: 1G
+  - section: Date
+    option: date.timezone
+    value: 'Europe/Warsaw'

@@ -1,0 +1,26 @@
+---
+- hosts: local
+  connection: local
+
+  vars_files:
+    - vars/dev.yml
+    - vars/apache.yml
+    - vars/php.yml
+
+  handlers:
+    - name: restart apache
+      become: yes
+      command: apachectl restart
+    - name: restart dnsmasq
+      become: yes
+      command: brew services restart dnsmasq
+    - name: restart mysql
+      command: brew services restart homebrew/versions/mysql56
+    - name: restart redis
+      command: brew services restart redis
+    - name: restart elasticsearch
+      command: brew services restart homebrew/versions/elasticsearch17
+
+  tasks:
+    - include: tasks/install.yml
+    - include: tasks/config.yml

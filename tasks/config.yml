@@ -1,0 +1,107 @@
+---
+################################################################################
+# dnsmasq config                                                               #
+################################################################################
+
+- name: Create /etc/resolver directory
+  become: yes
+  file:
+    path: /etc/resolver
+    state: directory
+
+- name: Add *.dev resolver
+  become: yes
+  lineinfile:
+    state: present
+    line: nameserver 127.0.0.1
+    create: yes
+    dest: /etc/resolver/dev
+    owner: root
+    group: wheel
+
+- name: Resolve *.dev to localhost
+  lineinfile:
+    state: present
+    line: address=/.dev/127.0.0.1
+    create: yes
+    dest: /usr/local/etc/dnsmasq.conf
+  notify: restart dnsmasq
+
+################################################################################
+# Apache config                                                                #
+################################################################################
+
+- name: Configure Apache
+  become: yes
+  lineinfile:
+    dest: /etc/apache2/httpd.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items: "{{ apache_configuration_items }}"
+  notify: restart apache
+
+
+- name: Add apache vhosts configuration
+  become: yes
+  template:
+    src: "vhosts.conf.j2"
+    dest: "/etc/apache2/extra/httpd-vhosts.conf"
+    owner: root
+    group: wheel
+    mode: 0644
+  notify: restart apache
+
+################################################################################
+# PHP config                                                                   #
+################################################################################
+
+- name: PHP configuration
+  ini_file:
+    dest: /usr/local/etc/php/5.6/php.ini
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items: "{{ php_configuration_items }}"
+  notify: restart apache
+
+################################################################################
+# nvm config                                                                   #
+################################################################################
+
+- name: Create ~/.nvm directory
+  file:
+    path: ~/.nvm
+    state: directory
+
+- name: Ensure ~/.bash_profile exists
+  file:
+    path: ~/.bash_profile
+    state: touch
+
+- name: Add NVM_DIR var to .bash_profile
+  lineinfile:
+    dest: ~/.bash_profile
+    line: 'export NVM_DIR="$HOME/.nvm"'
+    state: present
+
+- name: Add nvm.sh to .bash_profile
+  lineinfile:
+    dest: ~/.bash_profile
+    line: '. "$(brew --prefix nvm)/nvm.sh"'
+    state: present
+
+################################################################################
+# services                                                                     #
+################################################################################
+
+- name: List running services
+  command: sh -s "brew services list | grep started"
+  register: running_services_list
+  changed_when: false
+
+- name: Start services
+  command: brew services start {{ item.name }}
+  become: {{ item.root }}
+  with_items: {{ dev.services }}
+  when: "'{{ item.name }}' not in running_services_list.stdout"

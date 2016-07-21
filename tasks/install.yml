@@ -1,0 +1,24 @@
+---
+################################################################################
+# software install                                                             #
+################################################################################
+
+- name: Tap homebrew repositories
+  homebrew_tap: tap={{ item }}
+  with_items: "{{ dev.homebrew_taps }}"
+
+- name: Install apps via `brew cask`
+  homebrew_cask: name="{{ item }}" # install_options="appdir={{ homebrew_cask_appdir }}"
+  with_items: "{{ dev.homebrew_cask_apps }}"
+
+- name: Install configured homebrew packages
+  homebrew: name={{ item }} state=latest
+  with_items: "{{ dev.homebrew_packages }}"
+
+- name: Install npm ecosystem
+  npm: name={{ item }} global=yes state=present
+  with_items: "{{ dev.npm_packages }}"
+
+- name: Install gem ecosystem
+  gem: name={{ item }} state=present user_install=no
+  with_items: "{{ dev.gem_packages }}"
