@@ -116,8 +116,10 @@
   command: apachectl
   register: apachectl_cmd
   changed_when: false
+  ignore_errors: yes
 
 - name: Start apache
   become: yes
   command: apachectl start
   when: "'already running' in apachectl_cmd.stdout"
+  ignore_errors: yes
