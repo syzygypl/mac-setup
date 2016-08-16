@@ -35,6 +35,7 @@
   file:
     path: ~/Sites
     state: directory
+    follow: yes
 
 - name: Configure Apache
   become: yes
