@@ -47,6 +47,7 @@ dev:
     - wkhtmltopdf
     - sequel-pro
     - robomongo
+    - dropshare
 
   npm_packages:
     - gulp
