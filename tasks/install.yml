@@ -47,10 +47,10 @@
   homebrew: name={{ item }} state=latest
   with_items: "{{ dev.homebrew_packages }}"
 
-- name: Install npm ecosystem
+- name: Install npm packages
   npm: name={{ item }} global=yes state=present
   with_items: "{{ dev.npm_packages }}"
 
-- name: Install gem ecosystem
+- name: Install gem packages
   gem: name={{ item }} state=present user_install=no
   with_items: "{{ dev.gem_packages }}"
