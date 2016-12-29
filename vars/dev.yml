@@ -21,6 +21,9 @@ dev:
     - php56-redis
     - php56-imagick
     - php56-mcrypt
+    - php56-opcache
+    - php56-apcu
+    - php56-yaml
     - composer
     - imagemagick
     - elasticsearch17

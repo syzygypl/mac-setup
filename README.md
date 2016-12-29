@@ -4,6 +4,8 @@
 $ curl -sL https://raw.githubusercontent.com/syzygypl/mac-setup/master/bootstrap.sh | bash
 ```
 
+This script will setup your Mac with software that we use in Syzygy Warsaw on daily basis. All You need is paste above line to Terminal and execute.
+
 ## Apps
 
 - Atom
@@ -17,35 +19,37 @@ $ curl -sL https://raw.githubusercontent.com/syzygypl/mac-setup/master/bootstrap
 - Slack
 - Vagrant
 - VirtualBox
-- wkhtmltopdf
+- WKhtmlTOpdf
 - Sequel PRO
 - RoboMongo
 
-## Other software
+## Window-less software
 
 - tree
 - wget
-- fish
+- Fish Shell
 - pv
 - ssh-copy-id
-- redis
-- mysql56
-- php56
-- php56-xdebug
-- php56-intl
-- php56-redis
-- php56-imagick
-- php56-mcrypt
-- composer
-- imagemagick
-- ruby
-- elasticsearch17
+- Redis
+- MySQL 5.6
+- PHP 5.6
+- PHP Xdebug
+- PHP Intl
+- PHP Redis
+- PHP Imagick
+- PHP Mcrypt
+- PHP Opcache
+- PHP APCu
+- PHP YAML
+- Composer
+- ImageMagick
+- Ruby
+- ElasticSearch 1.7
 - heroku-toolbelt
-- node012
+- Node 0.12
 - nvm
-- dnsmasq
+- Dnsmasq
 - rsync
 - coreutils
-- gulp
-- hologram
-
+- Gulp
+- Hologram
