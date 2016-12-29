@@ -4,6 +4,7 @@ dev:
   homebrew_taps:
     - caskroom/cask
     - homebrew/php
+    - homebrew/apache
     - homebrew/versions
     - homebrew/services
 
