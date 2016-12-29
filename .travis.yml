@@ -9,6 +9,9 @@ cache:
     - $HOME/Library/Caches/Homebrew
 
 install:
+  # unlink brew node
+  - brew unlink node
+
   # Install ruby
   - brew install ruby
 
@@ -24,9 +27,6 @@ install:
   - "echo -e '[local]\nlocalhost ansible_connection=local' | sudo tee -a /etc/ansible/hosts > /dev/null"
 
 script:
-  # Install dependencies.
-  - "ansible-galaxy install -r requirements.yml"
-
   # Check the role/playbook's syntax.
   - "ansible-playbook main.yml --syntax-check"
 
