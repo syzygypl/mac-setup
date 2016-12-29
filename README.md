@@ -1,5 +1,7 @@
 # Mac setup with Ansible
 
+[![Build Status](https://travis-ci.org/syzygypl/mac-setup.svg?branch=master)](https://travis-ci.org/syzygypl/mac-setup)
+
 ```bash
 $ curl -sL https://raw.githubusercontent.com/syzygypl/mac-setup/master/bootstrap.sh | bash
 ```
