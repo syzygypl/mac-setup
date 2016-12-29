@@ -37,6 +37,7 @@ dev:
   homebrew_cask_apps:
     - atom
     - cocoarestclient
+    - docker
     - firefox
     - google-chrome
     - phpstorm
