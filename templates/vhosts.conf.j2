@@ -1,9 +1,14 @@
-# /etc/apache2/extra/httpd-vhosts.conf
+# /usr/local/etc/apache2/2.4/extra/httpd-vhosts.conf
 
 <Directory /Users/{{ ansible_ssh_user }}/Sites>
   Require all granted
   AllowOverride All
+  DirectoryIndex index.php index.html
 </Directory>
+
+<VirtualHost *:80>
+  DocumentRoot /Users/{{ ansible_ssh_user }}/Sites/
+</VirtualHost>
 
 <VirtualHost *:80>
   ServerName dev
@@ -24,3 +29,6 @@
   SetEnvIf Cookie "APP_NAME=(\w+)" APP_NAME=$1
 
 </VirtualHost>
+
+# Additional VirtualHosts
+IncludeOptional /usr/local/etc/apache2/2.4/vhosts/*.conf

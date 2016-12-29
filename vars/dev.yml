@@ -15,7 +15,6 @@ dev:
     - ssh-copy-id
     - redis
     - mysql56
-    - php56
     - php56-xdebug
     - php56-intl
     - php56-redis
@@ -23,7 +22,6 @@ dev:
     - php56-mcrypt
     - composer
     - imagemagick
-    - ruby
     - elasticsearch17
     - heroku-toolbelt
     - node012
@@ -47,7 +45,6 @@ dev:
     - wkhtmltopdf
     - sequel-pro
     - robomongo
-    - dropshare
 
   npm_packages:
     - gulp
@@ -57,6 +54,8 @@ dev:
 
   services:
     - name: dnsmasq
+      root: true
+    - name: httpd24
       root: true
     - name: mysql56
       root: false

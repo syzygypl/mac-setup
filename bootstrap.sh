@@ -27,6 +27,17 @@ if [[ ! -x /usr/local/bin/git ]]; then
     brew install git
 fi
 
+# Download and install ruby
+if [[ ! -x /usr/local/bin/ruby ]]; then
+    echo "Info   | Install   | ruby"
+    brew install ruby
+fi
+
+if [[ `which ruby` != "/usr/local/bin/ruby" ]]; then
+    echo "Info   | Symlink   | ruby"
+    brew link --overwrite ruby
+fi
+
 # Download and install Ansible
 if [[ ! -x /usr/local/bin/ansible ]]; then
     brew install ansible

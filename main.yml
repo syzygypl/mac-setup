@@ -10,7 +10,7 @@
   handlers:
     - name: restart apache
       become: yes
-      command: apachectl restart
+      command: brew services restart httpd24
     - name: restart dnsmasq
       become: yes
       command: brew services restart dnsmasq
