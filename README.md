@@ -37,6 +37,7 @@ You can check software being installed below. If no version is provided - we use
 - [tree](http://mama.indstate.edu/users/ice/tree/)
 - [wget](https://www.gnu.org/software/wget/)
 - [Fish Shell](https://fishshell.com)
+- [Bash Shell](https://www.gnu.org/software/bash/)
 - [pv](https://www.ivarch.com/programs/pv.shtml)
 - [ssh-copy-id](https://www.openssh.com/)
 - [Redis](http://redis.io/)

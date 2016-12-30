@@ -12,6 +12,7 @@ dev:
     - tree
     - wget
     - fish
+    - bash
     - pv
     - ssh-copy-id
     - redis
