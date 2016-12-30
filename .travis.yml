@@ -31,4 +31,4 @@ script:
   - "ansible-playbook main.yml --syntax-check"
 
   # Test the playbook.
-  - "ansible-playbook main.yml"
+  - "ansible-playbook main.yml -u $(whoami)"
