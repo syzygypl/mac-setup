@@ -8,7 +8,7 @@ php_configuration_items:
     value: 80M
   - section: PHP
     option: memory_limit
-    value: 1G
+    value: 10G
   - section: Date
     option: date.timezone
     value: 'Europe/Warsaw'

@@ -11,7 +11,7 @@ This script will setup your Mac with software that we use in **Syzygy Warsaw** o
 It will install `Apache 2.4` and `PHP 5.6` with required extensions and configure sites to be served from `~/Sites/*.dev/web` directories.
 DNS records of `*.dev` are being handled by `Dnsmasq` so no changes in `/etc/hosts` are required.
 
-You can check software being installed below. If no version is provided - we use newest.
+You can check software being installed below. If no version is provided - we use the newest.
 
 ## Apps
 
@@ -62,3 +62,134 @@ You can check software being installed below. If no version is provided - we use
 - [coreutils](https://www.gnu.org/software/coreutils)
 - [Gulp](http://gulpjs.com/)
 - [Hologram](https://trulia.github.io/hologram/)
+
+
+## Configuration
+
+### PHP
+
+`/usr/local/etc/php/5.6/php.ini`:
+
+```ini
+upload_max_filesize   20M
+post_max_size         80M
+memory_limit          10G
+date.timezone         'Europe/Warsaw'
+```
+
+### Apache
+
+`/usr/local/etc/apache2/2.4/httpd-vhosts.conf`:
+
+```
+LoadModule  vhost_alias_module  libexec/mod_vhost_alias.so
+LoadModule  rewrite_module      libexec/mod_rewrite.so
+LoadModule  php5_module         /usr/local/opt/php56/libexec/apache2/libphp5.so
+
+Include     /usr/local/etc/apache2/2.4/extra/httpd-vhosts.conf
+Include     /usr/local/etc/apache2/2.4/extra/httpd-php.conf
+
+User        {{ ansible_ssh_user }}
+Group       staff
+ServerName  {{ ansible_hostname }}.local
+```
+
+`/usr/local/etc/apache2/2.4/extra/httpd-vhosts.conf`:
+
+```
+<Directory /Users/{{ ansible_ssh_user }}/Sites>
+  Require all granted
+  AllowOverride All
+  DirectoryIndex index.php index.html
+</Directory>
+
+<VirtualHost *:80>
+  DocumentRoot /Users/{{ ansible_ssh_user }}/Sites/
+</VirtualHost>
+
+<VirtualHost *:80>
+  ServerName dev
+  ServerAlias *.dev
+
+  CustomLog /var/log/apache2/dev.access_log vcommon
+  ErrorLog /var/log/apache2/dev.error_log
+  VirtualDocumentRoot /Users/{{ ansible_ssh_user }}/Sites/%-2.0.%-1.0/web/
+
+  LogFormat "%{Host}i %l %u %t \"%r\" %>s %b" vcommon
+  Options +FollowSymLinks
+  DirectoryIndex index.php
+  FallbackResource /index.php
+
+  SetEnvIf Request_URI ^ Debug=1 DEBUG=1 SYMFONY_ENV=dev APP_ENV=dev
+  SetEnvIf Host ([^\.]+).dev APP_NAME=$1
+  SetEnvIf Host app.([^\.]+) APP_NAME=$1
+  SetEnvIf Cookie "APP_NAME=(\w+)" APP_NAME=$1
+
+</VirtualHost>
+
+# Additional VirtualHosts
+IncludeOptional /usr/local/etc/apache2/2.4/vhosts/*.conf
+```
+
+`/usr/local/etc/apache2/2.4/httpd-php.conf`:
+
+```
+<FilesMatch \.php$>
+  SetHandler application/x-httpd-php
+</FilesMatch>
+```
+
+### Dnsmasq
+
+`/etc/resolver/dev`:
+
+```
+nameserver 127.0.0.1
+```
+
+`/usr/local/etc/dnsmasq.conf`:
+
+```
+address=/.dev/127.0.0.1
+```
+
+###  Services
+
+All services are managed via `brew services` command.
+
+```bash
+$ brew services list
+
+Name              Status  User Plist
+dnsmasq           started root /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
+elasticsearch@1.7 started kuba /Users/kuba/Library/LaunchAgents/homebrew.mxcl.elasticsearch@1.7.plist
+httpd24           started root /Library/LaunchDaemons/homebrew.mxcl.httpd24.plist
+mysql@5.6         started kuba /Users/kuba/Library/LaunchAgents/homebrew.mxcl.mysql@5.6.plist
+php56             stopped
+redis             started kuba /Users/kuba/Library/LaunchAgents/homebrew.mxcl.redis.plist
+```
+
+`dnsmasq` and `apache` should be started as `root`:
+
+```bash
+$ sudo brew services start httpd24
+==> Successfully started `httpd24` (label: homebrew.mxcl.httpd24)
+
+$ sudo brew services start dnsmasq
+==> Successfully started `dnsmasq` (label: homebrew.mxcl.dnsmasq)
+```
+
+Rest can be started as regular user (no `sudo` required):
+
+```bash
+$ brew services start redis
+==> Successfully started `redis` (label: homebrew.mxcl.redis)
+
+$ brew services start elasticsearch17
+==> Successfully started `elasticsearch@1.7` (label: homebrew.mxcl.elasticsearch@1.7)
+
+$ brew services start mysql56
+==> Successfully started `mysql@5.6` (label: homebrew.mxcl.mysql@5.6)
+```
+
+Other commands available for `brew services` are `restart` and `stop`.
