@@ -2,7 +2,7 @@
 sudo: required
 language: objective-c
 # 10.12 (see https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version)
-osx_image: xcode8.1
+osx_image: xcode8.2
 
 cache:
   directories:
@@ -31,4 +31,4 @@ script:
   - "ansible-playbook main.yml --syntax-check"
 
   # Test the playbook.
-  - "ansible-playbook main.yml -u $(whoami)"
+  - "travis_wait 30 ansible-playbook main.yml -u $(whoami)"
