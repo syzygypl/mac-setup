@@ -29,7 +29,7 @@ dev:
     - imagemagick
     - elasticsearch17
     - heroku-toolbelt
-    - node012
+    - node
     - nvm
     - dnsmasq
     - homebrew/dupes/rsync
