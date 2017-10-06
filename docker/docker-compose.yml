@@ -1,0 +1,131 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/config.toml:/etc/traefik/traefik.toml
+    labels:
+      - "traefik.port=8080"
+
+  nassau-https-proxy:
+    build: ./nassau-https-proxy
+    ports:
+     - "443:443"
+    volumes:
+     - ./nassau-https-proxy/data:/data/.nassau-proxy
+    labels:
+     - "SERVICE_443_NAME=https"
+     - "traefik.enable=false"
+
+  whoami1:
+    image: emilevauge/whoami
+    labels:
+      - "traefik.frontend.rule=Host:whoami.dev"
+      - "traefik.backend=whoami"
+
+  whoami2:
+    image: emilevauge/whoami
+    labels:
+      - "traefik.frontend.rule=Host:whoami.dev"
+      - "traefik.backend=whoami"
+
+  consul:
+    image: consul:0.9.3
+    ports:
+      - "8300:8300"
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:8600"
+      - "8600:8600/udp"
+    expose:
+      - "8301"
+      - "8301/udp"
+      - "8302"
+      - "8302/udp"
+    labels:
+      - "traefik.port=8500"
+      - "SERVICE_53_IGNORE=yes"
+      - "SERVICE_8300_IGNORE=yes"
+      - "SERVICE_8301_IGNORE=yes"
+      - "SERVICE_8302_IGNORE=yes"
+      - "SERVICE_8400_IGNORE=yes"
+
+  dnsmasq:
+    image: andyshinn/dnsmasq
+    command: --log-facility=- --log-queries --address=/test/127.0.0.1 --address=/dev/127.0.0.1
+    ports:
+     - "53:53"
+     - "53:53/udp"
+    labels:
+     - "SERVICE_53_NAME=dns"
+     - "traefik.enable=false"
+    cap_add:
+      - NET_ADMIN
+
+  registrator:
+    image: gliderlabs/registrator:master
+    command: -internal consul://consul:8500
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    links:
+      - consul
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - 8025
+    labels:
+      - "traefik.port=8025"
+      - "SERVICE_1025_NAME=smtp"
+      - "SERVICE_8025_NAME=mailhog"
+
+  portainer:
+    image: portainer/portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    labels:
+      - "traefik.port=9000"
+
+  mysql:
+    image: mysql
+    ports:
+     - "3306:3306"
+    volumes:
+     - mysql:/var/lib/mysql
+     - ./mysql:/etc/mysql/conf.d
+    labels:
+     - "traefik.enable=false"
+    environment:
+     - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+
+  redis:
+    image: redis
+    command: --appendonly yes
+    volumes:
+     - redis:/data
+    labels:
+     - "traefik.enable=false"
+   
+  elasticsearch:
+    image: elasticsearch:1
+    ports:
+     - "9200:9200"
+    labels:
+     - "traefik.port=9200"
+     - "SERVICE_9200_NAME=elasticsearch"
+     - "SERVICE_9300_IGNORE=true"
+    volumes:
+     - elasticsearch:/usr/share/elasticsearch/data
+
+volumes:
+  portainer:
+  mysql: 
+  elasticsearch:
+  redis:
+  composer:
+  npm:
