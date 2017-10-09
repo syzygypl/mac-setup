@@ -18,10 +18,10 @@
 
 ## Configuring resolver
 
-   # https://github.com/chulkilee/dev-docker/blob/master/scripts/add-resolver.sh
+    # https://github.com/chulkilee/dev-docker/blob/master/scripts/add-resolver.sh
 
-   echo "nameserver 127.0.0.1" | sudo tee /etc/resolver/test /etc/resolver/dev /etc/resolver/consul
-   sudo killall -HUP mDNSResponder
+    echo "nameserver 127.0.0.1" | sudo tee /etc/resolver/test /etc/resolver/dev /etc/resolver/consul
+    sudo killall -HUP mDNSResponder
 
 ## Default `docker-compose.yml` in your project
 
