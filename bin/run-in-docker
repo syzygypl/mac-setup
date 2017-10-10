@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+search_up() {
+    local name="$1" directory="${2:-$(pwd)}"
+
+    if [[ -z "$1" ]]; then
+        echo 'Usage: search_up() <filename> [<directory> = $(pwd)]' >&2
+        return 127
+    fi
+
+    while [[ -n "$directory" ]]; do
+        if [[ -e "$directory/$name" ]]; then
+            echo "$directory"
+            return 0
+        fi
+
+        directory="${directory%/*}"
+
+    done
+
+    return 1
+}
+
+get_service_name() {
+    local cmd=$(basename "$1") service_name="$(docker-compose config --services | head -1)"
+
+    # exit early as there is no docker-compose any way
+    if [[ -z "$service_name" ]]; then
+        return 1
+    fi
+
+    docker-compose create 2>/dev/null
+
+    docker inspect $(docker-compose ps -q) \
+        | docker run -i --rm stedolan/jq -rC --arg COMMAND_NAME "$cmd" --arg DEFAULT_SERVICE "$service_name" '.
+            | map(.Config.Labels)
+            | map({ "service": .["com.docker.compose.service"], "commands": (.["io.szg.dev.commands"]//"") } )
+            | map(select( .commands | split(" ") | contains([$COMMAND_NAME]) ))
+            | (first).service // $DEFAULT_SERVICE
+        '
+}
+
+main () {
+    local service_name="$(get_service_name $1)"
+    local project_dir="$(search_up docker-compose.yml)"
+
+    if [[ -z "$project_dir" ]] || [[ -z "$service_name" ]]; then
+        echo 'I cannot determine the project directory. Are you sure the docker-compose.yml file is present?' >&2
+        return 127
+    fi
+
+    local pwd="$(pwd)"
+    local working_dir="${pwd#$project_dir}"
+
+    docker-compose run --no-deps -w "/app${working_dir}" "$service_name" "$@"
+}
+
+main "$@"

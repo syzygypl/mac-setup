@@ -23,6 +23,17 @@
     echo "nameserver 127.0.0.1" | sudo tee /etc/resolver/test /etc/resolver/dev /etc/resolver/consul
     sudo killall -HUP mDNSResponder
 
+
+## Run one-off in docker
+
+```
+run-in-docker php -v
+```
+
+The command will preserve the current working dir relative to the project root, and choose the best image
+basing on the command you want to invoke (see `io.szg.dev.commands` label below)
+
+
 ## Default `docker-compose.yml` in your project
 
 ```
@@ -43,6 +54,9 @@ services:
         environment:
             # this is needed for the shared cache to work
             COMPOSER_HOME: /home/composer
+        labels:
+            # use this container for running those commands by default:
+            io.szg.dev.commands: php composer
 
     browsersync:
         build: .docker/
