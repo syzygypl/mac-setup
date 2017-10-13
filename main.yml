@@ -22,5 +22,5 @@
       command: brew services restart homebrew/versions/elasticsearch
 
   tasks:
-    - include: tasks/install.yml
-    - include: tasks/config.yml
+    - include_tasks: tasks/install.yml
+    - include_tasks: tasks/config.yml

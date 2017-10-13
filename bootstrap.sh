@@ -50,4 +50,4 @@ fi
 
 cd $ANSIBLE_CONFIGURATION_DIRECTORY
 git pull
-ansible-playbook main.yml -u $(whoami) --ask-sudo-pass
+ansible-playbook main.yml -u $(whoami)
