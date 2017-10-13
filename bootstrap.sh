@@ -45,9 +45,9 @@ fi
 
 # Clone down the Ansible repo
 if [[ ! -d $ANSIBLE_CONFIGURATION_DIRECTORY ]]; then
-    git clone https://github.com/syzygypl/mac-setup $ANSIBLE_CONFIGURATION_DIRECTORY --ask-sudo-pass
+    git clone https://github.com/syzygypl/mac-setup $ANSIBLE_CONFIGURATION_DIRECTORY
 fi
 
 cd $ANSIBLE_CONFIGURATION_DIRECTORY
 git pull
-ansible-playbook main.yml -u $(whoami)
+ansible-playbook main.yml -u $(whoami) --ask-sudo-pass
