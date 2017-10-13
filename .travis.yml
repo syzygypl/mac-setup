@@ -23,6 +23,9 @@ install:
   - "echo -e '[local]\nlocalhost ansible_connection=local' | sudo tee -a /etc/ansible/hosts > /dev/null"
 
 script:
+  # check ansible version
+  - "ansible --version"
+
   # Check the role/playbook's syntax.
   - "ansible-playbook main.yml --syntax-check"
 
