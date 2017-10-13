@@ -17,6 +17,7 @@ dev:
     - redis
     - mysql56
     - php56-xdebug
+    - php56-igbinary
     - php56-intl
     - php56-redis
     - php56-imagick
