@@ -39,14 +39,14 @@
 
 - name: Ensure Virtual Hosts directory exists
   file:
-    path: /usr/local/etc/apache2/2.4/vhosts
+    path: /usr/local/etc/httpd/vhosts
     state: directory
     follow: yes
 
 - name: Configure Apache
   become: yes
   lineinfile:
-    dest: /usr/local/etc/apache2/2.4/httpd.conf
+    dest: /usr/local/etc/httpd/httpd.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
@@ -57,25 +57,25 @@
   become: yes
   template:
     src: "vhosts.conf.j2"
-    dest: "/usr/local/etc/apache2/2.4/extra/httpd-vhosts.conf"
+    dest: "/usr/local/etc/httpd/extra/httpd-vhosts.conf"
     mode: 0644
   notify: restart apache
 
 - name: Apache php handler config file
   template:
     src: "php.conf.j2"
-    dest: "/usr/local/etc/apache2/2.4/extra/httpd-php.conf"
+    dest: "/usr/local/etc/httpd/extra/httpd-php.conf"
     mode: 0644
   notify: restart apache
 
 - name: Add apache php handler
   blockinfile:
-    dest: /usr/local/etc/apache2/2.4/httpd.conf
+    dest: /usr/local/etc/httpd/httpd.conf
     state: present
-    insertafter: "#Include /usr/local/etc/apache2/2.4/extra/httpd-default.conf"
+    insertafter: "#Include /usr/local/etc/httpd/extra/httpd-default.conf"
     block: |
       # PHP handler
-      Include /usr/local/etc/apache2/2.4/extra/httpd-php.conf
+      Include /usr/local/etc/httpd/extra/httpd-php.conf
 ################################################################################
 # PHP config                                                                   #
 ################################################################################

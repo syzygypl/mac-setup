@@ -10,7 +10,7 @@
   handlers:
     - name: restart apache
       become: yes
-      command: brew services restart httpd24
+      command: brew services restart httpd
     - name: restart dnsmasq
       become: yes
       command: brew services restart dnsmasq
@@ -19,7 +19,7 @@
     - name: restart redis
       command: brew services restart redis
     - name: restart elasticsearch
-      command: brew services restart homebrew/versions/elasticsearch17
+      command: brew services restart homebrew/versions/elasticsearch
 
   tasks:
     - include: tasks/install.yml

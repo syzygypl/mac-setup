@@ -1,13 +1,13 @@
-# /usr/local/etc/apache2/2.4/extra/httpd-vhosts.conf
+# /usr/local/etc/httpd/extra/httpd-vhosts.conf
 
-<Directory /Users/{{ ansible_ssh_user }}/Sites>
+<Directory /Users/{{ ansible_ssh_user | default(lookup('env', 'USER')) }}/Sites>
   Require all granted
   AllowOverride All
   DirectoryIndex index.php index.html
 </Directory>
 
 <VirtualHost *:80>
-  DocumentRoot /Users/{{ ansible_ssh_user }}/Sites/
+  DocumentRoot /Users/{{ ansible_ssh_user | default(lookup('env', 'USER')) }}/Sites/
 </VirtualHost>
 
 <VirtualHost *:80>
@@ -16,7 +16,7 @@
 
   CustomLog /var/log/apache2/dev.access_log vcommon
   ErrorLog /var/log/apache2/dev.error_log
-  VirtualDocumentRoot /Users/{{ ansible_ssh_user }}/Sites/%-2.0.%-1.0/web/
+  VirtualDocumentRoot /Users/{{ ansible_ssh_user | default(lookup('env', 'USER')) }}/Sites/%-2.0.%-1.0/web/
 
   LogFormat "%{Host}i %l %u %t \"%r\" %>s %b" vcommon
   Options +FollowSymLinks
@@ -31,4 +31,4 @@
 </VirtualHost>
 
 # Additional VirtualHosts
-IncludeOptional /usr/local/etc/apache2/2.4/vhosts/*.conf
+IncludeOptional /usr/local/etc/httpd/vhosts/*.conf

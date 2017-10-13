@@ -4,7 +4,6 @@ dev:
   homebrew_taps:
     - caskroom/cask
     - homebrew/php
-    - homebrew/apache
     - homebrew/versions
     - homebrew/services
 
@@ -27,7 +26,7 @@ dev:
     - php56-yaml
     - composer
     - imagemagick
-    - elasticsearch17
+    - elasticsearch
     - heroku-toolbelt
     - node
     - nvm
@@ -63,11 +62,11 @@ dev:
   services:
     - name: dnsmasq
       root: true
-    - name: httpd24
+    - name: httpd
       root: true
     - name: mysql56
       root: false
-    - name: elasticsearch17
+    - name: elasticsearch
       root: false
     - name: redis
       root: false
