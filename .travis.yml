@@ -5,6 +5,9 @@ language: objective-c
 osx_image: xcode8.2
 
 install:
+  # update brew
+  - "brew update"
+
   # unlink brew node
   - brew unlink node
 
