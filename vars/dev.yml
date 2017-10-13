@@ -51,7 +51,7 @@ dev:
     - virtualbox
     - wkhtmltopdf
     - sequel-pro
-    - robomongo
+    - robo-3t
 
   npm_packages:
     - gulp
