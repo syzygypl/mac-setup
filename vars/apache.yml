@@ -9,7 +9,7 @@ apache_configuration_items:
   - regexp: "^#?Include /usr/local/etc/httpd/extra/httpd-vhosts.conf"
     line: "Include /usr/local/etc/httpd/extra/httpd-vhosts.conf"
   - regexp: "^User "
-    line: "User {{ ansible_ssh_user | default(lookup('env', 'USER') }}"
+    line: "User {{ ansible_ssh_user | default(lookup('env', 'USER')) }}"
   - regexp: "^Group "
     line: "Group staff"
   - regexp: "^#ServerName www.example.com:80"
