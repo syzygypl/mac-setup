@@ -13,6 +13,9 @@ RUN pecl install redis-3.1.0 \
     && pecl install xdebug-2.5.0 \
     && docker-php-ext-enable redis
 
+RUN pecl install apcu-4.0.11 \
+    && echo extension=apcu.so > /usr/local/etc/php/conf.d/apcu.ini
+
 RUN curl -Ls https://downloads.wkhtmltopdf.org/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz | tar Jxf - -C /tmp \
     && mv /tmp/wkhtmltox/bin/wkhtmltopdf /bin
 
