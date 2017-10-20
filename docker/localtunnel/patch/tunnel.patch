@@ -1,0 +1,10 @@
+--- a/Tunnel.js	2017-10-20 20:16:28.000000000 +0200
++++ b/Tunnel.js	2017-10-21 00:24:11.000000000 +0200
+@@ -81,6 +81,7 @@
+ 
+     info.local_host = opt.local_host;
+     info.local_port = opt.port;
++    info.endpoint = opt.endpoint;
+ 
+     var tunnels = self.tunnel_cluster = TunnelCluster(info);
+ 

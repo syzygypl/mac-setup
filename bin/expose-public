@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+get_localtunnel_url() {
+    if [[ -n "${LOCALTUNNEL_URL}" ]]; then
+        echo "$LOCALTUNNEL_URL"
+        return 
+    fi
+
+    if command -v envchain >/dev/null; then
+        local url="$(envchain localtunnel printenv LOCALTUNNEL_URL 2>/dev/null)"
+
+        if [[ -n "$url" ]]; then
+            echo "$url"
+            return
+        fi
+
+        echo 'You need to set the \$LOCALTUNNEL_URL variable:' >&2
+        echo 'envchain --set localtunnel LOCALTUNNEL_URL' >&2
+
+        return 1 
+    fi
+
+     echo 'You need to set the \$LOCALTUNNEL_URL variable:' >&2
+     echo 'export LOCALTUNNEL_URL=...' >&2
+
+     return 1
+
+}
+
+main() {
+    local host="${1:-}" public="${2:-}"
+
+    if [[ -z "$host" ]]; then
+        echo "usage: $0 <hostname> [ <public-name> ]" >&2
+        return 1
+    fi
+
+    if [[ -z "$public" ]]; then
+        public=${host/.dev}
+    fi
+
+    local target="${public}.$(hostname -s)"
+    local localtunnel_url="$(get_localtunnel_url)"
+
+    [[ -z "$localtunnel_url" ]] && return 1
+
+    docker run -it --net=host syzygypl/localtunnel \
+        --local-host=$host --port 80 --host "$localtunnel_url" \
+        --subdomain=$target --endpoint=docker.for.mac.localhost
+}
+
+main "$@"

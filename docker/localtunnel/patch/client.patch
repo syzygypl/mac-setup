@@ -1,0 +1,32 @@
+--- a/client	2017-10-21 00:07:34.000000000 +0200
++++ b/client	2017-10-21 00:09:06.000000000 +0200
+@@ -2,6 +2,10 @@
+ var lt_client = require('../client');
+ var open_url = require('openurl');
+
++process.on('SIGINT', function() {
++    process.exit();
++});
++
+ var argv = require('yargs')
+     .usage('Usage: $0 --port [num] <options>')
+     .option('h', {
+@@ -17,6 +17,10 @@
+         alias: 'local-host',
+         describe: 'Tunnel traffic to this host instead of localhost, override Host header to this host'
+     })
++    .options('e', {
++        alias: 'endpoint',
++        describe: 'Use this local endpoint (overrides local_host)'
++    })
+     .options('o', {
+         alias: 'open',
+         describe: 'opens url in your browser'
+@@ -40,6 +44,7 @@
+     host: argv.host,
+     port: argv.port,
+     local_host: argv['local-host'],
++    endpoint: argv.endpoint,
+     subdomain: argv.subdomain,
+ };
+ 

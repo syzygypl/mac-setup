@@ -33,6 +33,23 @@ run-in-docker php -v
 The command will preserve the current working dir relative to the project root, and choose the best image
 basing on the command you want to invoke (see `io.szg.dev.commands` label below)
 
+## Expose your local environment 
+
+`brew install envchain` is strongly adviced for your convenience.
+
+```bash
+# in local network:
+expose-internal www.name-of-your-project.dev [optional custom name]
+```
+
+You will need `$DIGITALOCEAN_API_KEY` to update the DNS records during the first run. 
+
+```bash
+# publicly:
+expose-public www.name-of-your-project.dev [optional custom name]
+```
+
+This needs to have a localtunnel endpoint URL in `$LOCALTUNNEL_URL` variable.
 
 ## Default `docker-compose.yml` in your project
 

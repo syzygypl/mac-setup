@@ -1,0 +1,29 @@
+--- a/TunnelCluster.js	2017-10-20 23:44:33.000000000 +0200
++++ b/TunnelCluster.js	2017-10-20 23:46:14.000000000 +0200
+@@ -28,9 +28,10 @@
+     var remote_port = opt.remote_port;
+ 
+     var local_host = opt.local_host || 'localhost';
++    var endpoint = opt.endpoint || local_host;
+     var local_port = opt.local_port;
+ 
+-    debug('establishing tunnel %s:%s <> %s:%s', local_host, local_port, remote_host, remote_port);
++    debug('establishing tunnel %s:%s <> %s:%s', endpoint, local_port, remote_host, remote_port);
+ 
+     // connection to localtunnel server
+     var remote = net.connect({
+@@ -57,12 +58,12 @@
+             return;
+         }
+ 
+-        debug('connecting locally to %s:%d', local_host, local_port);
++        debug('connecting locally to %s:%d', endpoint, local_port);
+         remote.pause();
+ 
+         // connection to local http server
+         var local = net.connect({
+-            host: local_host,
++            host: endpoint,
+             port: local_port
+         });
+ 

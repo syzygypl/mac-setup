@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+DOMAIN_SUFFIX="${DOMAIN_SUFFIX:-dev.szg.io}"
+
+jq() {
+    docker run -i --rm stedolan/jq "$@"
+}
+
+get_digitalocean_key() {
+    if [[ -n "$DIGITALOCEAN_API_KEY" ]]; then
+        echo "$DIGITALOCEAN_API_KEY";
+        return
+    fi
+
+    if ! command -v envchain >/dev/null; then
+        echo 'You need to specifiy $DIGITALOCEAN_API_KEY' >&2
+        echo 'You can get the API key from https://cloud.digitalocean.com/settings/api/tokens' >&2
+
+        return 1
+    fi
+
+    local key=$(envchain digitalocean env | grep DIGITALOCEAN_API_KEY | cut -d= -f2)
+
+    if [[ -z "$key" ]]; then
+        echo "Please store the DIGITALOCEAN_API_KEY using 'envchain --set digitalocean DIGITALOCEAN_API_KEY'" >&2
+        echo 'You can get the API key from https://cloud.digitalocean.com/settings/api/tokens' >&2
+        return 1
+    fi
+        
+    echo $key
+}
+
+get_local_name() {
+    {
+        hostname -s
+
+        /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I \
+            | awk '/ SSID/ {print substr($0, index($0, $2))}' \
+            | iconv -t ascii//TRANSLIT \
+            | sed -E s/[^a-zA-Z0-9]+/-/g \
+            | sed -E s/^-+\|-+\$//g \
+            | tr A-Z a-z
+    } | paste -sd "." - | sed s/[.]$//
+}
+
+get_lan_ip_address() {
+    networksetup -listallhardwareports| grep Device | awk '{print $2}' | xargs -n 1 ipconfig getifaddr | head -1
+}
+
+set_dns_target() {
+    local target="$1" ip=$(get_lan_ip_address) domain="${DOMAIN_SUFFIX#dev.}"
+
+    if [[ "$ip" == "$(dig +short "$target")" ]]; then
+        return
+    fi
+
+    local token=$(get_digitalocean_key)
+
+    if [[ -z "$token" ]]; then
+        return 1
+    fi 
+
+    echo "Creating $target domain name to point to your IP: $ip" 
+    
+    local name=${target%.$domain}
+
+#    curl --silent "https://api.digitalocean.com/v2/domains/$domain/records?per_page=200" \
+#        -H "Authorization: Bearer $token" | jq -C --arg name $target '.domain_records |.[]| select(.name == $name)'
+
+    curl -s -o /dev/null -X POST "https://api.digitalocean.com/v2/domains/$domain/records" \
+        --data $(printf '{"data":"%s","type":"A","name":"%s","ttl":60}' $ip $name) \
+        -H "Authorization: Bearer $token" \
+        -H "Content-Type: application/json"
+
+    curl -s -o /dev/null -X POST "https://api.digitalocean.com/v2/domains/$domain/records" \
+        --data $(printf '{"data":"%s.","type":"CNAME","name":"*.%s","ttl":60}' $target $name) \
+        -H "Authorization: Bearer $token" \
+        -H "Content-Type: application/json"
+}
+
+add_traefik_frontend() {
+    local target=$1 host=$2
+
+    local backend=$(curl -s http://traefik.szg.dev/api/providers/docker/frontends \
+        | jq -r --arg target "$host" '(
+            .[] 
+            | select (.routes 
+                | .[] | select(.rule == "Host:" + $target)
+            )).backend '
+    )
+
+    if [[ -z "$backend" ]]; then
+        echo 'There is nothing running at this url' >&2
+        return 1;
+    fi
+
+    local payload="$(curl -s http://traefik.szg.dev/api/providers/web/frontends \
+        | jq -R --arg backend "$backend" --arg target "$target" '{
+            "frontends": ((fromjson?//{}) + {
+                ($target): {
+                    "backend": $backend,
+                    "routes": {
+                        "public": {
+                            "rule": ("Host:" + $target)
+                        }
+                    }
+                }
+            })
+        }'
+    )"
+
+    curl --silent -o /dev/null -XPUT http://traefik.szg.dev/api/providers/web -d "$payload"
+
+}
+
+main() {
+    local host="${1:-}" public="${2:-}"
+
+    if [[ -z "$host" ]]; then
+        echo "usage: $0 <hostname> [ <public-name> ]" >&2
+        return 1
+    fi
+
+    if [[ -z "$public" ]]; then
+        public=${host/.dev}
+    fi
+
+    local machine="$(get_local_name).${DOMAIN_SUFFIX}"
+    local target="${public}.${machine}"
+
+    set_dns_target "$machine"
+
+    add_traefik_frontend "$target" "$host"
+
+    if [[ $? -gt 0 ]]; then
+        return 1;
+    fi
+
+    echo "http://${target}/ → http://${host}/"
+}
+
+main "$@"
