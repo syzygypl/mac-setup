@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PV=$(command -v pv || echo cat)
+
+mysqldump() {
+    docker run --rm -i mysql mysqldump "$@" 2> >(grep -v 'Using a password')
+}
+
+mysql() {
+    docker run --rm -i mysql mysql --host docker.for.mac.localhost --user root -patdevrocks 2> >(grep -v 'Using a password')
+}
+
+php() {
+    docker run --rm -i syzygypl/php:5.6 php "$@"
+}
+
+parse_dsn() {
+    declare dsn="$1"
+
+    php -r 'echo implode("\t", array_slice(array_replace([
+            "user" => "",
+            "pass" => "",
+            "host" => "", 
+            "port" => "3306",
+            "path" => "",
+        ],
+        parse_url($_SERVER["argv"][1])
+    ), 0, 5));' -- "$dsn"
+}
+
+get_heroku_var() {
+    declare app="$1" name="$2"
+
+    if command -v heroku >/dev/null; then
+        heroku config:get --app "$app" "$name" 
+        return 
+    fi
+
+    if [[ -z "$HEROKU_API_KEY" ]]; then
+        echo "You need \$HEROKU_API_KEY to fetch database config from heroku" >&2
+        return
+    fi
+
+    curl --silent "https://api.heroku.com/apps/${app}/config-vars" \
+        -H "Authorization: Bearer ${HEROKU_API_KEY}" \
+        -H "Accept: application/vnd.heroku+json; version=3" \
+    | docker run --rm -i stedolan/jq -r --arg name "$name" '.[$name]//""'
+
+}
+
+guess_app_name() {
+    if command -v heroku >/dev/null; then
+        heroku apps:info --json | docker run --rm -i stedolan/jq -r .app.name 2>/dev/null
+        return 
+    fi
+
+    local remote="$(git remote get-url heroku 2>/dev/null)"
+
+    if [[ -n "$remote" ]]; then
+        basename "$remote" ".git"
+    fi
+}
+
+import_database() {
+    declare db="$1"
+
+    read user pass host port path || : # there is an EOF before a newline
+    echo "Importing $db database..."
+
+    {
+        echo "DROP DATABASE IF EXISTS ${db};";
+        echo "CREATE DATABASE ${db};";
+		echo "USE ${db};"
+        mysqldump --user="$user" --password="$pass" --host="$host" --port="$port" --no-create-db -- "${path##/}"
+    } | $PV | mysql
+
+}
+
+main() {
+    declare name="${1:-$(guess_app_name)}" db="${2:-}"
+
+    if [[ -z "$name" ]]; then
+        echo "Usage: $0 <app-name> [ <database-name> ]" >&2
+        return 1
+    fi
+
+    if [[ -z "$db" ]]; then
+        db="${name//[.-]/_}_heroku"
+    fi
+
+    local url="$(get_heroku_var "$name" "CLEARDB_DATABASE_URL")"
+
+    if [[ -z "$url" ]]; then
+        echo "Failed to get the database details from heroku app $name" >&2
+        return 1
+    fi
+
+    parse_dsn "$url" | import_database "$db" 
+    
+}
+
+main "$@"
