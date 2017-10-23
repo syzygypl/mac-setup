@@ -39,7 +39,7 @@ main() {
         public=${host/.dev}
     fi
 
-    local target="${public}.$(hostname -s)"
+    local target="${public}.$(hostname -s | tr [A-Z] [a-z])"
     local localtunnel_url="$(get_localtunnel_url)"
 
     [[ -z "$localtunnel_url" ]] && return 1
