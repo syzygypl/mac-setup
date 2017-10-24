@@ -39,14 +39,14 @@ main() {
         public=${host/.dev}
     fi
 
-    local target="${public}.$(hostname -s | tr [A-Z] [a-z])"
+    local target="${public}.$(hostname -s | tr '[A-Z]' '[a-z]')"
     local localtunnel_url="$(get_localtunnel_url)"
 
     [[ -z "$localtunnel_url" ]] && return 1
 
     docker run -it --net=host syzygypl/localtunnel \
         --local-host=$host --port 80 --host "$localtunnel_url" \
-        --subdomain=$target --endpoint=docker.for.mac.localhost
+        --subdomain=${target//[-]/} --endpoint=docker.for.mac.localhost
 }
 
 main "$@"
