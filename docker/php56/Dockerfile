@@ -37,5 +37,6 @@ RUN echo 'zend_extension=xdebug.so' > /usr/local/etc/php/php-cli-server.ini
 
 ADD install-node.sh /bin/install-node
 ADD 50-extension-xdebug.ini /usr/local/etc/php/conf.d/
+ADD 90-syzygy.ini /usr/local/etc/php/conf.d/
 
 ENV PORT 80
