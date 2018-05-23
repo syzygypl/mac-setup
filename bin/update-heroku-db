@@ -31,10 +31,19 @@ parse_dsn() {
 }
 
 get_heroku_var() {
-    declare app="$1" name="$2"
+    declare app="$1"
+
+    shift
 
     if command -v heroku >/dev/null; then
-        heroku config:get --app "$app" "$name" 
+        for name in "$@"; do
+            local result=$(heroku config:get --app "$app" "$name")
+            if [ -n "$result" ]; then
+                break;
+            fi
+        done
+
+        echo "$result"
         return 
     fi
 
@@ -67,7 +76,7 @@ import_database() {
     declare db="$1"
 
     read user pass host port path || : # there is an EOF before a newline
-    echo "Importing $db database..."
+    echo "Importing $db database from mysq://${host}/${path##/}..."
 
     {
         echo "DROP DATABASE IF EXISTS ${db};";
@@ -90,7 +99,7 @@ main() {
         db="${name//[.-]/_}_heroku"
     fi
 
-    local url="$(get_heroku_var "$name" "CLEARDB_DATABASE_URL")"
+    local url="$(get_heroku_var "$name" "MYSQL_DSN" "CLEARDB_DATABASE_URL")"
 
     if [[ -z "$url" ]]; then
         echo "Failed to get the database details from heroku app $name" >&2
