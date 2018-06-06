@@ -5,11 +5,11 @@ set -euo pipefail
 PV=$(command -v pv || echo cat)
 
 mysqldump() {
-    docker run --rm -i mysql mysqldump "$@" 2> >(grep -v 'Using a password')
+    docker run --rm -i mysql:5.7 mysqldump "$@" 2> >(grep -v 'Using a password')
 }
 
 mysql() {
-    docker run --rm -i mysql mysql --host docker.for.mac.localhost --user root -patdevrocks 2> >(grep -v 'Using a password')
+    docker run --rm -i mysql:5.7 mysql --host docker.for.mac.localhost --user root -patdevrocks 2> >(grep -v 'Using a password')
 }
 
 php() {
