@@ -18,7 +18,7 @@ services:
     ports:
      - "443:443"
     volumes:
-     - ./nassau-https-proxy/data:/data/.nassau-proxy
+     - ./nassau-https-proxy/data:/data
     labels:
      - "SERVICE_443_NAME=https"
      - "traefik.enable=false"

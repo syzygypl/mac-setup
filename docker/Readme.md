@@ -14,7 +14,7 @@
 
 ## Accepting Root certificate
 
-    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain nassau-https-proxy/data/v0/ssl.proxy.nassau.narzekasz.pl.crt
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain nassau-https-proxy/data/ssl.proxy.nassau.narzekasz.pl.crt
 
 ## Configuring resolver
 
