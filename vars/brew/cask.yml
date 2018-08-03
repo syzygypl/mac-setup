@@ -2,7 +2,7 @@
 install_cask_apps: true
 
 homebrew_cask_apps:
-  - 11password
+  - 1password
   - atom
   - charles
   - cocoarestclient
@@ -11,7 +11,7 @@ homebrew_cask_apps:
   - google-chrome
   - phpstorm
   - iterm2
-  - java
+  - java8
   - skype
   - slack
   - discord

@@ -36,6 +36,11 @@ script:
   - "ansible-playbook main.yml --syntax-check"
 
   # Test the playbook.
-  - "ansible-playbook playbooks/apache.yml -u $(whoami) "
-  - "ansible-playbook playbooks/php.yml -u $(whoami) "
-  - "ansible-playbook main.yml -u $(whoami) "
+  - "ansible-playbook playbooks/apache.yml -u $(whoami)"
+  - "ansible-playbook playbooks/php.yml"
+  - "ansible-playbook main.yml"
+
+  # Test php
+  - "sphp 5.6; php -v"
+  - "sphp 7.1; php -v"
+  - "sphp 7.2; php -v"

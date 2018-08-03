@@ -18,14 +18,8 @@
       loop_control:
         label: "Installing PHP {{ item.version }}"
 
-    - name: Register extension directories
-      shell: |
-        brew link --force --overwrite {{ item.name }} > /dev/null 2>&1;
-        pecl config-get ext_dir
-      register: "ext_dirs"
-      with_items: "{{ php_versions }}"
-      loop_control:
-        label: "Registering PECL extension dir for PHP {{ item.version }}"
+    - name: Install imagemagick
+      homebrew: name=imagemagick state=latest
 
     - name: Install php extensions
       shell: |
@@ -34,11 +28,10 @@
           pecl install {{ item[1].name }}{% if item[0].legacy %}{{ item[1].legacy }}{% endif %};
           brew unlink {{ item[0].name }};
       args:
-        creates: "{{ item[2].stdout }}/{{ item[1].name }}.so"
+        creates: "/usr/local/lib/php/pecl/{{ item[0].ext_dir }}/{{ item[1].name }}.so"
       with_nested:
         - "{{ php_versions }}"
         - "{{ php_extensions }}"
-        - "{{ ext_dirs.results }}"
       loop_control:
         label: "Installing {{ item[1].name }}{% if item[0].legacy %}{{ item[1].legacy }}{% endif %} for {{ item[0].name }}"
 

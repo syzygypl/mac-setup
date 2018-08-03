@@ -10,7 +10,6 @@ homebrew_packages:
   - redis
   - mysql@5.7
   - composer
-  - imagemagick
   - elasticsearch@5.6
   - heroku-toolbelt
   - node
