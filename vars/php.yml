@@ -1,4 +1,29 @@
 ---
+php_versions:
+  - name: php@5.6
+    legacy: true
+    version: 5.6
+  - name: php@7.1
+    legacy: false
+    version: 7.1
+  - name: php@7.2
+    legacy: false
+    version: 7.2
+
+php_extensions:
+  - name: apcu
+    legacy: -4.0.11
+  - name: igbinary
+    legacy: ""
+  - name: redis
+    legacy: ""
+  - name: yaml
+    legacy: -1.3.1
+  - name: xdebug
+    legacy: -2.5.5
+  - name: imagick
+    legacy: ""
+
 php_configuration_items:
   - section: PHP
     option: upload_max_filesize
@@ -8,7 +33,7 @@ php_configuration_items:
     value: 80M
   - section: PHP
     option: memory_limit
-    value: 10G
+    value: -1
   - section: Date
     option: date.timezone
     value: 'Europe/Warsaw'

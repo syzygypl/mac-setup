@@ -9,85 +9,22 @@
     path: /etc/resolver
     state: directory
 
-- name: Add *.dev resolver
+- name: Add *.loc resolver
   become: yes
   lineinfile:
     state: present
     line: nameserver 127.0.0.1
     create: yes
-    dest: /etc/resolver/dev
+    dest: /etc/resolver/loc
     owner: root
     group: wheel
 
-- name: Resolve *.dev to localhost
+- name: Resolve *.loc to localhost
   lineinfile:
     state: present
-    line: address=/.dev/127.0.0.1
+    line: address=/.loc/127.0.0.1
     create: yes
     dest: /usr/local/etc/dnsmasq.conf
-  notify: restart dnsmasq
-
-################################################################################
-# Apache config                                                                #
-################################################################################
-
-- name: Ensure ~/Sites exists
-  file:
-    path: ~/Sites
-    state: directory
-    follow: yes
-
-- name: Ensure Virtual Hosts directory exists
-  file:
-    path: /usr/local/etc/httpd/vhosts
-    state: directory
-    follow: yes
-
-- name: Configure Apache
-  become: yes
-  lineinfile:
-    dest: /usr/local/etc/httpd/httpd.conf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: present
-  with_items: "{{ apache_configuration_items }}"
-  notify: restart apache
-
-- name: Add apache vhosts configuration
-  become: yes
-  template:
-    src: "vhosts.conf.j2"
-    dest: "/usr/local/etc/httpd/extra/httpd-vhosts.conf"
-    mode: 0644
-  notify: restart apache
-
-- name: Apache php handler config file
-  template:
-    src: "php.conf.j2"
-    dest: "/usr/local/etc/httpd/extra/httpd-php.conf"
-    mode: 0644
-  notify: restart apache
-
-- name: Add apache php handler
-  blockinfile:
-    dest: /usr/local/etc/httpd/httpd.conf
-    state: present
-    insertafter: "#Include /usr/local/etc/httpd/extra/httpd-default.conf"
-    block: |
-      # PHP handler
-      Include /usr/local/etc/httpd/extra/httpd-php.conf
-################################################################################
-# PHP config                                                                   #
-################################################################################
-
-- name: PHP configuration
-  ini_file:
-    dest: /usr/local/etc/php/5.6/php.ini
-    section: "{{ item.section }}"
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items: "{{ php_configuration_items }}"
-  notify: restart apache
 
 ################################################################################
 # nvm config                                                                   #
@@ -127,5 +64,6 @@
 - name: Start services
   command: brew services start {{ item.name }}
   become: "{{ item.root }}"
-  with_items: "{{ dev.services }}"
+  with_items: "{{ services }}"
   when: "'{{ item.name }}' not in running_services_list.stdout"
+  ignore_errors: true

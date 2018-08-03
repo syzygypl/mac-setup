@@ -1,0 +1,94 @@
+---
+- hosts: local
+  connection: local
+
+  vars_files:
+    - ../vars/php.yml
+
+  tasks:
+    ################################################################################
+    # PHP install                                                                  #
+    ################################################################################
+
+    - name: Install php versions
+      shell: "brew install {{ item.name }}; brew unlink {{ item.name }};"
+      args:
+        creates: "/usr/local/opt/{{ item.name }}/"
+      with_items: "{{ php_versions }}"
+      loop_control:
+        label: "Installing PHP {{ item.version }}"
+
+    - name: Register extension directories
+      shell: |
+        brew link --force --overwrite {{ item.name }} > /dev/null 2>&1;
+        pecl config-get ext_dir
+      register: "ext_dirs"
+      with_items: "{{ php_versions }}"
+      loop_control:
+        label: "Registering PECL extension dir for PHP {{ item.version }}"
+
+    - name: Install php extensions
+      shell: |
+          brew link --force --overwrite {{ item[0].name }};
+          pecl uninstall -r {{ item[1].name }};
+          pecl install {{ item[1].name }}{% if item[0].legacy %}{{ item[1].legacy }}{% endif %};
+          brew unlink {{ item[0].name }};
+      args:
+        creates: "{{ item[2].stdout }}/{{ item[1].name }}.so"
+      with_nested:
+        - "{{ php_versions }}"
+        - "{{ php_extensions }}"
+        - "{{ ext_dirs.results }}"
+      loop_control:
+        label: "Installing {{ item[1].name }}{% if item[0].legacy %}{{ item[1].legacy }}{% endif %} for {{ item[0].name }}"
+
+    - name: Switch PHP script
+      shell: "curl -L https://gist.githubusercontent.com/rhukster/f4c04f1bf59e0b74e335ee5d186a98e2/raw > /usr/local/bin/sphp;"
+      args:
+        creates: "/usr/local/bin/sphp"
+
+    - name: Execution attributes for sphp script
+      file:
+        path: "/usr/local/bin/sphp"
+        mode: "0755"
+
+    ################################################################################
+    # PHP config                                                                   #
+    ################################################################################
+
+    - name: PHP configuration
+      ini_file:
+        dest: /usr/local/etc/php/{{ item[1].version }}/php.ini
+        section: "{{ item[0].section }}"
+        option: "{{ item[0].option }}"
+        value: "{{ item[0].value }}"
+      with_nested:
+        - "{{ php_configuration_items }}"
+        - "{{ php_versions }}"
+      loop_control:
+        label: "Setting [{{ item[0].section }}] {{ item[0].option }} to {{ item[0].value }} for PHP {{ item[1].version }}"
+
+    - name: Cleanup php.ini files
+      lineinfile:
+        dest: "/usr/local/etc/php/{{ item.version }}/php.ini"
+        regexp: '^(zend_)?extension=\"[a-z]+\.so\"'
+        state: absent
+      with_items: "{{ php_versions }}"
+      loop_control:
+        label: "Cleaning up PHP {{ item.version }} ini file"
+
+    - name: Extensions configuration
+      template:
+        src: "../templates/php/ext-{{ item[0].name }}.ini"
+        dest: "/usr/local/etc/php/{{ item[1].version }}/conf.d/ext-{{ item[0].name }}.ini"
+        mode: 0644
+      with_nested:
+        - "{{ php_extensions }}"
+        - "{{ php_versions }}"
+      loop_control:
+        label: "Configuring {{ item[0].name }} for PHP {{ item[1].version }}"
+
+    - name: Switch PHP to version 7.2
+      command: "sphp 7.2"
+      args:
+        creates: /usr/local/lib/libphp5.so

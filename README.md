@@ -194,3 +194,28 @@ $ brew services start mysql56
 ```
 
 Other commands available for `brew services` are `restart` and `stop`.
+
+
+## Cleanup old brew PHP
+
+```bash
+$ brew update
+$ brew upgrade
+$ brew cleanup
+
+# check what packages are installed
+$ brew list | grep php
+
+# uninstall old php packages
+$ brew uninstall --force php56 php56-apcu php56-opcache php56-xdebug php56-yaml php56-igbinary php56-intl php56-redis php56-imagick php56-mcrypt
+$ brew uninstall --force php70 php70-apcu php70-opcache php70-xdebug php70-yaml php70-igbinary php70-intl php70-redis php70-imagick php70-mcrypt
+$ brew uninstall --force php71 php71-apcu php71-opcache php71-xdebug php71-yaml php71-igbinary php71-intl php71-redis php71-imagick php71-mcrypt
+$ brew uninstall --force php72 php72-apcu php72-opcache php72-xdebug php72-yaml php72-igbinary php72-intl php72-redis php72-imagick php72-mcrypt
+$ brew cleanup
+
+# check if everything was uninstalled Successfully
+$ brew list | grep php
+
+# remove old configs
+$ rm -Rf /usr/local/etc/php/*
+```

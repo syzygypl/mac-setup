@@ -11,11 +11,11 @@
 </VirtualHost>
 
 <VirtualHost *:80>
-  ServerName dev
-  ServerAlias *.dev
+  ServerName loc
+  ServerAlias *.loc
 
-  CustomLog /usr/local/var/log/httpd/dev.access_log vcommon
-  ErrorLog /usr/local/var/log/httpd/dev.error_log
+  CustomLog /usr/local/var/log/httpd/loc.access_log vcommon
+  ErrorLog /usr/local/var/log/httpd/loc.error_log
   VirtualDocumentRoot /Users/{{ ansible_ssh_user | default(lookup('env', 'USER')) }}/Sites/%-2.0.%-1.0/web/
 
   LogFormat "%{Host}i %l %u %t \"%r\" %>s %b" vcommon
@@ -24,7 +24,7 @@
   FallbackResource /index.php
 
   SetEnvIf Request_URI ^ Debug=1 DEBUG=1 SYMFONY_ENV=dev APP_ENV=dev
-  SetEnvIf Host ([^\.]+).dev APP_NAME=$1
+  SetEnvIf Host ([^\.]+).loc APP_NAME=$1
   SetEnvIf Host app.([^\.]+) APP_NAME=$1
   SetEnvIf Cookie "APP_NAME=(\w+)" APP_NAME=$1
 

@@ -50,4 +50,8 @@ fi
 
 cd $ANSIBLE_CONFIGURATION_DIRECTORY
 git pull
-ansible-playbook main.yml -u $(whoami) --ask-sudo-pass
+
+# run provisioning
+ansible-playbook playbooks/apache.yml -u $(whoami) --ask-become-pass
+ansible-playbook playbooks/php.yml -u $(whoami)
+ansible-playbook main.yml -u $(whoami) --ask-become-pass

@@ -5,53 +5,18 @@
 
 - name: Tap homebrew repositories
   homebrew_tap: tap={{ item }}
-  with_items: "{{ dev.homebrew_taps }}"
-
-################################################################################
-# PHP install                                                                  #
-################################################################################
-
-- name: Install PHP
-  homebrew:
-    name: php56
-    state: latest
-    install_options: with-httpd
-
-################################################################################
-# Apache install                                                               #
-################################################################################
-
-- name: Stop system Apache
-  become: yes
-  command: apachectl stop
-
-- name: Unload system Apache Deamon
-  become: yes
-  shell: "launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null"
-
-- name: Install Apache 2.4 from brew
-  homebrew:
-    name: httpd
-    state: latest
+  with_items: "{{ homebrew_taps }}"
 
 ################################################################################
 # software install                                                             #
 ################################################################################
 
 - name: Install apps via `brew cask`
-  homebrew_cask: name="{{ item }}" # install_options="appdir={{ homebrew_cask_appdir }}"
-  with_items: "{{ dev.homebrew_cask_apps }}"
+  homebrew_cask: name="{{ item }}"
+  with_items: "{{ homebrew_cask_apps }}"
+  when: install_cask_apps
+  ignore_errors: yes
 
 - name: Install configured homebrew packages
   homebrew: name={{ item }} state=latest
-  with_items: "{{ dev.homebrew_packages }}"
-
-- name: Install npm packages
-  npm: name={{ item }} global=yes state=present
-  with_items: "{{ dev.npm_packages }}"
-  ignore_errors: true
-
-- name: Install gem packages
-  gem: name={{ item }} state=present user_install=no
-  with_items: "{{ dev.gem_packages }}"
-  ignore_errors: true
+  with_items: "{{ homebrew_packages }}"

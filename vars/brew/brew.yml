@@ -1,0 +1,21 @@
+---
+homebrew_packages:
+  - azure-cli
+  - tree
+  - wget
+  - fish
+  - bash
+  - pv
+  - ssh-copy-id
+  - redis
+  - mysql@5.7
+  - composer
+  - imagemagick
+  - elasticsearch@5.6
+  - heroku-toolbelt
+  - node
+  - nvm
+  - dnsmasq
+  - rsync
+  - coreutils
+  - yarn

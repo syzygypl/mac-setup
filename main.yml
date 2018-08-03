@@ -3,7 +3,10 @@
   connection: local
 
   vars_files:
-    - vars/dev.yml
+    - vars/brew/taps.yml
+    - vars/brew/brew.yml
+    - vars/brew/cask.yml
+    - vars/brew/services.yml
     - vars/apache.yml
     - vars/php.yml
 
@@ -20,6 +23,11 @@
       command: brew services restart redis
     - name: restart elasticsearch
       command: brew services restart homebrew/versions/elasticsearch
+
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_fileglob:
+        - vars/override.yml
 
   tasks:
     - include_tasks: tasks/install.yml

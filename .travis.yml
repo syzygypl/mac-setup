@@ -2,12 +2,15 @@
 sudo: required
 language: objective-c
 # 10.12 (see https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version)
-osx_image: xcode8.2
+os: osx
+osx_image:
+  - xcode9.2
+  - xcode9.4
+
+before_install:
+  - brew update
 
 install:
-  # update brew
-  - "brew update"
-
   # unlink brew node
   - brew unlink node
 
@@ -17,8 +20,8 @@ install:
   # Install Ansible.
   - brew install ansible
 
-  # Add ansible.cfg to pick up roles path.
-  # - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+  # do not test cask apps install, only java for elasticsearch
+  - "echo 'homebrew_cask_apps: [java8]' >> vars/override.yml"
 
   # Add a hosts file.
   - sudo mkdir -p /etc/ansible
@@ -30,7 +33,11 @@ script:
   - "ansible --version"
 
   # Check the role/playbook's syntax.
+  - "ansible-playbook playbooks/apache.yml --syntax-check"
+  - "ansible-playbook playbooks/php.yml --syntax-check"
   - "ansible-playbook main.yml --syntax-check"
 
   # Test the playbook.
-  - "travis_wait 60 ansible-playbook main.yml -u $(whoami)"
+  - "ansible-playbook playbooks/apache.yml -u $(whoami) "
+  - "ansible-playbook playbooks/php.yml -u $(whoami) "
+  - "ansible-playbook main.yml -u $(whoami) "

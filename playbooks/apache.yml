@@ -1,0 +1,77 @@
+---
+- hosts: local
+  connection: local
+
+  vars_files:
+    - ../vars/apache.yml
+
+  tasks:
+    ################################################################################
+    # Apache install                                                               #
+    ################################################################################
+
+    - name: Stop system Apache
+      become: yes
+      command: apachectl stop
+
+    - name: Unload system Apache Deamon
+      become: yes
+      shell: "launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null"
+
+    - name: Install Apache 2.4 from brew
+      homebrew:
+        name: httpd
+        state: latest
+        install_options: with-privileged-ports, with-http2
+
+    ################################################################################
+    # Apache config                                                                #
+    ################################################################################
+
+    - name: Ensure ~/Sites exists
+      file:
+        path: ~/Sites
+        state: directory
+        follow: yes
+
+    - name: Ensure Virtual Hosts directory exists
+      file:
+        path: /usr/local/etc/httpd/vhosts
+        state: directory
+        follow: yes
+
+    - name: Remove PHP modules
+      lineinfile:
+        dest: /usr/local/etc/httpd/httpd.conf
+        regexp: "^#?LoadModule php[5|7]_module*"
+        state: absent
+
+    - name: Configure Apache
+      become: yes
+      lineinfile:
+        dest: /usr/local/etc/httpd/httpd.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+      with_items: "{{ apache_configuration_items }}"
+
+    - name: Add apache vhosts configuration
+      template:
+        src: "../templates/vhosts.conf.j2"
+        dest: "/usr/local/etc/httpd/extra/httpd-vhosts.conf"
+        mode: 0644
+
+    - name: Apache php handler config file
+      template:
+        src: "../templates/php.conf.j2"
+        dest: "/usr/local/etc/httpd/extra/httpd-php.conf"
+        mode: 0644
+
+    - name: Add apache php handler
+      blockinfile:
+        dest: /usr/local/etc/httpd/httpd.conf
+        state: present
+        insertafter: "#Include /usr/local/etc/httpd/extra/httpd-default.conf"
+        block: |
+          # PHP handler
+          Include /usr/local/etc/httpd/extra/httpd-php.conf
