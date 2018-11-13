@@ -11,7 +11,6 @@ homebrew_packages:
   - mysql@5.7
   - composer
   - elasticsearch@5.6
-  - heroku-toolbelt
   - node
   - nvm
   - dnsmasq
