@@ -1,7 +1,7 @@
 ---
 sudo: required
 language: objective-c
-# 10.12 (see https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version)
+# 10.13 (see https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version)
 os: osx
 osx_image: xcode10.1
 
@@ -16,7 +16,7 @@ install:
   - brew install ruby
 
   # Install Ansible.
-  - brew install ansible
+  #- brew install ansible
 
   # do not test cask apps install, only java for elasticsearch
   - "echo 'homebrew_cask_apps: [java8]' >> vars/override.yml"
