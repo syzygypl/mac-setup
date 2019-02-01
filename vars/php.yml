@@ -1,9 +1,9 @@
 ---
 php_versions:
-  - name: php@5.6
-    legacy: true
-    version: 5.6
-    ext_dir: 20131226
+  #- name: php@5.6
+  #  legacy: true
+  #  version: 5.6
+  #  ext_dir: 20131226
   - name: php@7.1
     legacy: false
     version: 7.1
