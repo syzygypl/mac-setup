@@ -53,5 +53,5 @@ git pull
 
 # run provisioning
 ansible-playbook playbooks/apache.yml -u $(whoami) --ask-become-pass
-#ansible-playbook playbooks/php.yml
+ansible-playbook playbooks/php.yml
 ansible-playbook main.yml --ask-become-pass
