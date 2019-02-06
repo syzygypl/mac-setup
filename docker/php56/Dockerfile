@@ -1,5 +1,7 @@
 FROM php:5.6-apache
 
+RUN apt-get update &&  apt-get install -y gnupg2
+
 RUN curl --silent --location https://deb.nodesource.com/setup_4.x | bash - \
     && apt-get install -y openssh-client git nodejs libicu-dev imagemagick libmagickwand-dev libmagickcore-dev libmcrypt-dev less nano --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
