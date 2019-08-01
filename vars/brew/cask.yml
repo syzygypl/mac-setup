@@ -12,6 +12,7 @@ homebrew_cask_apps:
   - phpstorm
   - iterm2
   - java8
+  - adoptopenjdk8
   - skype
   - slack
   - discord
