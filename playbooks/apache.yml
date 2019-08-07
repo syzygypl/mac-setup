@@ -20,7 +20,7 @@
 
     - name: Install Apache 2.4 from brew
       homebrew:
-        name: httpd24
+        name: httpd
         state: latest
         install_options: with-privileged-ports, with-http2
 
