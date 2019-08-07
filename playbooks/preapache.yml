@@ -1,7 +1,7 @@
 ---
 - name: Install packages before main isntall on new Mac OS X
   hosts: localhost
-  become: false
   vars:
     brew_cask_packages:
-      - 'httpd'
+      - httpd
+      - atom
