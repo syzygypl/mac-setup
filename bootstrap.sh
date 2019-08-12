@@ -2,7 +2,7 @@
 
 set -e
 
-ANSIBLE_CONFIGURATION_DIRECTORY="$HOME/.ansible-mac-setup"
+ANSIBLE_CONFIGURATION_DIRECTORY="/Users/przemo/Desktop/mac-setup"
 
 # Download and install Command Line Tools with a checking heuristic
 if [[ $(/usr/bin/gcc 2>&1) =~ "no developer tools were found" ]] || [[ ! -x /usr/bin/gcc ]]; then
@@ -42,6 +42,9 @@ fi
 if [[ ! -x /usr/local/bin/ansible ]]; then
     brew install ansible
 fi
+
+# Download and install Apache 2.4
+    brew install httpd
 
 # Clone down the Ansible repo
 if [[ ! -d $ANSIBLE_CONFIGURATION_DIRECTORY ]]; then
