@@ -25,7 +25,7 @@ homebrew_cask_apps:
   - macdown
 
   ## Quick Look plugins
-  - betterzipql
+  - betterzip
   - qlmarkdown
   - qlcolorcode
   - qlstephen
