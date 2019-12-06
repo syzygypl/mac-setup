@@ -2,10 +2,11 @@ version: "3"
 
 services:
   traefik:
-    image: traefik
+    image: traefik:v1.7.18
     restart: unless-stopped
     ports:
       - "80:80"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/config.toml:/etc/traefik/traefik.toml
