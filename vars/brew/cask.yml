@@ -16,7 +16,6 @@ homebrew_cask_apps:
   - slack
   - discord
   - vagrant
-  - virtualbox
   - wkhtmltopdf
   - sequel-pro
   - robo-3t
