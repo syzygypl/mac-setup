@@ -5,3 +5,4 @@ homebrew_taps:
   - homebrew/cask-versions
   - homebrew/services
   - heroku/brew
+  - elastic/tap
