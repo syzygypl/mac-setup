@@ -5,7 +5,5 @@ services:
     root: true
   - name: mysql@5.7
     root: false
-  - name: elasticsearch@5.6
-    root: false
   - name: redis
     root: false
